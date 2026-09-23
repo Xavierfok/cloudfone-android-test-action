@@ -76,7 +76,7 @@ outputs:
     description: Absolute path of the screenshot, empty if it could not be taken (adb mode)
 
 runs:
-  using: node20
+  using: node24
   main: main.js
   post: post.js
   post-if: always()
