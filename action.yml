@@ -1,5 +1,5 @@
 name: cloudf.one Android phone
-description: Reserve a real Android phone in Singapore for a CI job, and install and test an APK on it over adb
+description: 'Reserve a real Android phone in Singapore for a CI job. The adb install/test mode needs a cloudf.one WireGuard tunnel.'
 author: Xavier Fok
 branding:
   icon: smartphone
