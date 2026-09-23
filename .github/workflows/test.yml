@@ -8,11 +8,11 @@ jobs:
   unit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - run: node --test test/
+      - run: node --test test/*.test.js
 
   # Runs the action for real against the live API with a token that can't work.
   # Proves the CLI installs, the API is reached, the failure is reported as an
@@ -20,7 +20,7 @@ jobs:
   bad-token:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: phone
         uses: ./
         continue-on-error: true
@@ -36,7 +36,7 @@ jobs:
     env:
       HAVE_TOKEN: ${{ secrets.CLOUDFONE_TOKEN != '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: env.HAVE_TOKEN == 'true'
       - id: phone
         if: env.HAVE_TOKEN == 'true'
