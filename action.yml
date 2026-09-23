@@ -1,0 +1,82 @@
+name: cloudf.one Android phone
+description: Reserve a real Android phone in Singapore for a CI job, and install and test an APK on it over adb
+author: Xavier Fok
+branding:
+  icon: smartphone
+  color: green
+
+inputs:
+  token:
+    description: cloudf.one access token (generate at cloudf.one/#!/settings). Pass it from a secret.
+    required: true
+  serial:
+    description: Phone serial to use. Default is the first ready phone on the account.
+    required: false
+  carrier:
+    description: Fail unless the phone's SIM carrier matches, e.g. Singtel or M1.
+    required: false
+  wait-timeout:
+    description: Seconds to wait for the phone to be present and ready.
+    default: "300"
+  lock-minutes:
+    description: Idle minutes before STF drops the control lock on its own.
+    default: "30"
+  keep-lock:
+    description: Set to "true" to keep holding the phone after the job instead of releasing it.
+    default: "false"
+  cli-spec:
+    description: pip requirement for cloudfone-cli.
+    default: git+https://github.com/Xavierfok/cloudfone-cli@v0.1.0
+  wireguard-config:
+    description: WireGuard client config for the cloudf.one adb tunnel. Setting it turns on adb mode. Pass it from a secret.
+    required: false
+  adb-host:
+    description: Tunnel address adb should connect to (from your tunnel setup). Required in adb mode.
+    required: false
+  adb-key:
+    description: Private adb key (contents of ~/.android/adbkey) that you have authorised on the phone once. Pass it from a secret.
+    required: false
+  apk:
+    description: Path to an APK to install (adb mode).
+    required: false
+  package:
+    description: Package name to launch after install (adb mode).
+    required: false
+  launch-wait:
+    description: Seconds to wait after launching the package.
+    default: "5"
+  test-command:
+    description: Shell command to run against the phone (adb mode). ANDROID_SERIAL is set, so adb and Gradle target the phone.
+    required: false
+  screenshot:
+    description: Where to save the end-of-run screenshot (adb mode).
+    default: cloudfone-screenshot.png
+  base-url:
+    description: API base URL. Only for testing.
+    required: false
+
+outputs:
+  mode:
+    description: '"reserve" (no tunnel) or "adb"'
+  serial:
+    description: Serial of the phone the job holds
+  model:
+    description: Phone model, e.g. SM-G981B
+  carrier:
+    description: SIM carrier as the phone reports it
+  android-version:
+    description: Android version
+  network:
+    description: Mobile network type, e.g. LTE or NR
+  adb-serial:
+    description: host:port that adb uses for the phone (adb mode)
+  test-result:
+    description: '"passed" or "failed" (adb mode with test-command)'
+  screenshot:
+    description: Absolute path of the screenshot, empty if it could not be taken (adb mode)
+
+runs:
+  using: node20
+  main: main.js
+  post: post.js
+  post-if: always()
