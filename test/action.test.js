@@ -60,7 +60,7 @@ test('token is required', () => {
 
 test('reserve mode refuses adb-only inputs with a clear reason', () => {
   assert.throws(() => L.parseInputs({ INPUT_TOKEN: 't', INPUT_APK: 'app.apk' }),
-    /cannot install apps/);
+    /need adb, which needs the WireGuard tunnel.*devices\/\{serial\}\/install/);
 });
 
 test('adb mode needs adb-host', () => {
