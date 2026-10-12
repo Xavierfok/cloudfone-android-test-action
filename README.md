@@ -12,10 +12,10 @@ It is built on [cloudfone-cli](https://github.com/Xavierfok/cloudfone-cli) and n
 |---|---|---|
 | Needs | an access token | the token, plus the cloudf.one WireGuard tunnel |
 | Waits for the phone, checks carrier, holds the lock | yes | yes |
-| Installs an APK, launches it, runs your tests, screenshot | no | yes |
+| Installs an APK, launches it, runs your tests, screenshot | no (install over REST yourself, [below](#install-an-apk-without-the-tunnel)) | yes |
 | Runners | any | Linux |
 
-The split comes from the platform. cloudf.one's REST API can list and lock phones, but installs, taps and screenshots need adb. adb isn't open to the internet: it only runs through a WireGuard tunnel scoped to your own phone. Right now that tunnel is set up by hand. [Message cloudf.one](https://cloudf.one/developers?utm_source=github&utm_medium=repo) and ask for one.
+The split comes from the platform. cloudf.one's REST API can list and lock phones and install an APK, but launching it, taps, test runs and screenshots need adb. adb isn't open to the internet: it only runs through a WireGuard tunnel scoped to your own phone. Right now that tunnel is set up by hand. [Message cloudf.one](https://cloudf.one/developers?utm_source=github&utm_medium=repo) and ask for one.
 
 ## Reserve a phone
 
@@ -31,6 +31,21 @@ The split comes from the platform. cloudf.one's REST API can list and lock phone
 To get the token, log in to cloudf.one, open your phone once, then generate one under `cloudf.one/#!/settings` → **Access tokens**. Store it as the repository secret `CLOUDFONE_TOKEN`.
 
 The lock is released when the job ends, even if it fails. Set `keep-lock: "true"` to keep it. The lock is the same one a browser tab takes, so don't have the phone open in a browser while the job runs.
+
+### Install an APK without the tunnel
+
+Installing works over REST with the same token, so reserve mode can put a build on the phone without adb:
+
+```yaml
+- name: Install the APK on the cloudf.one phone
+  env:
+    CLOUDFONE_TOKEN: ${{ secrets.CLOUDFONE_TOKEN }}
+    SERIAL: ${{ steps.phone.outputs.serial }}
+  run: |
+    curl -sS --fail-with-body -X POST "https://cloudf.one/api/v1/devices/$SERIAL/install"       -H "Authorization: Bearer $CLOUDFONE_TOKEN"       -F "file=@app/build/outputs/apk/debug/app-debug.apk"
+```
+
+It answers with the installed package name once Android has installed it. Uploads are capped at 512 MB, one install per phone at a time (409) and 30 an hour per account (429). Launching the app and running tests against it still need adb mode.
 
 ## Install and test an APK (adb mode)
 
