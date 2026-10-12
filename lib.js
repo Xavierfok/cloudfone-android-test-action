@@ -42,8 +42,9 @@ function parseInputs(env = process.env) {
   }
   if (inputs.mode === 'reserve' && (inputs.apk || inputs.package || inputs.testCommand)) {
     throw new Error('"apk", "package" and "test-command" need adb, which needs the ' +
-      'WireGuard tunnel: set "wireguard-config" and "adb-host". The cloudf.one REST API ' +
-      'cannot install apps or take screenshots on its own.');
+      'WireGuard tunnel: set "wireguard-config" and "adb-host". Without the tunnel, install ' +
+      'the APK with POST /api/v1/devices/{serial}/install (see the README); launching it, ' +
+      'tests and screenshots still need adb.');
   }
   return inputs;
 }
